@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Grades Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+
+        .upload-container {
+            text-align: center;
+        }
+
+        input[type="file"] {
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 20px;
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #3498db; 
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .divider {
+            width: 100%;
+            height: 5px;
+            background-color: gray;
+            margin: 30px 0;
+        }
+
+        .category-container {
+            display: none;
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .image-box {
+            max-width: 100%;
+        }
+
+        img {
+            width: 80%;
+            height: auto;
+        }
+
+        iframe {
+            width: 100%;
+            height: 500px;
+            max-height: 500px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="upload-container">
+        <h1>"Analyze the factors responsible for affecting students' grades.</h1>
+        <h2>Upload your university's students' grade CSV/Excel file.</h2>
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" id="file" required><br><br>
+            <button class="submit-btn" type="submit">Upload File</button>
+        </form>
+        <!-- Loader shown during upload process -->
+        <div class="loader" id="loader"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="category-container" id="image-section" style="display: none;">
+        <h3>The various factors that have a major effect on students' grades, along with their contributions, are given below.</h3>
+
+        <div class="divider"></div>
+        <h4>Socio-Economical and Psychological Features</h4>
+        <h6>The top 5 Socio-Economical and Psychological factors affecting students' grades, along with the impact of each individual feature on the grades, are displayed in the graphs.</h6>
+        <div class="image-container" id="totalfeature-container">
+        </div>
+
+        <div class="divider"></div>
+        <h4>Socio-Economical Features</h4>
+        <h6>The top 5 Socio-Economical factors only affecting students' grades, along with the impact of each individual feature on the grades, are displayed in the graphs.</h6>
+        <div class="image-container" id="scfeature-container">
+        </div>
+
+        <div class="divider"></div>
+        <h4>Psychological Features</h4>
+        <h6>The top 5 Psychological factors only affecting students' grades, along with the impact of each individual feature on the grades, are displayed in the graphs.</h6>
+        <div class="image-container" id="psyfeature-container">
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').onsubmit = function(event) {
+            event.preventDefault(); 
+
+            document.getElementById('loader').style.display = 'inline-block';
+
+            const formData = new FormData(event.target);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loader').style.display = 'none';
+
+                if (data) {
+                    document.getElementById('image-section').style.display = 'block';
+                    document.getElementById('totalfeature-container').innerHTML = '';
+                    document.getElementById('scfeature-container').innerHTML = '';
+                    document.getElementById('psyfeature-container').innerHTML = '';
+
+                    function displaySortedImages(containerId, images) {
+                        const sortedImages = images.sort((a, b) => {
+                            const isAImage = a.endsWith('.png');
+                            const isBImage = b.endsWith('.png');
+                            return isAImage === isBImage ? 0 : isAImage ? -1 : 1;
+                        });
+
+                        sortedImages.forEach(image => {
+                            if (image.endsWith('.png')) {
+                                const imgElement = document.createElement('img');
+                                imgElement.src = "./static/plots/" + image;
+                                document.getElementById(containerId).appendChild(imgElement);
+                            }
+                            else {
+                                const iframe = document.createElement('iframe');
+                                iframe.src = "./static/plots/" + image;
+                                document.getElementById(containerId).appendChild(iframe);
+                            }
+                        });
+                    }
+                    displaySortedImages('totalfeature-container', data.totalfeature);
+                    displaySortedImages('scfeature-container', data.scfeature);
+                    displaySortedImages('psyfeature-container', data.psyfeature);
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                document.getElementById('loader').style.display = 'none';
+            });
+        };
+    </script>
+
+</body>
+</html>
