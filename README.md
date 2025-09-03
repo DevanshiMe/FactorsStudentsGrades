@@ -6,7 +6,7 @@ This project investigates the **socio-economic, psychological, and lifestyle fac
 We use machine learning models to predict grades based on various attributes, and provide a simple **web-based UI** (Flask + HTML) for user interaction.
 
 
-## 📊 Dataset
+## Dataset
 
 **Source:** `Factors_affecting_university_student_grades_dataset.csv`
 
@@ -23,7 +23,7 @@ Preprocessing steps included:
 * Dropping irrelevant/redundant features
 
 
-## 🤖 Models Implemented
+## Models Implemented
 
 * Logistic Regression
 * Decision Tree
@@ -36,7 +36,7 @@ Preprocessing steps included:
 Evaluation metrics: **Accuracy, Confusion Matrix, and Visualization (Plotly/Matplotlib).**
 
 
-## 🌐 Web Application
+## Web Application
 
 The project includes a simple **Flask-based web UI**:
 
@@ -46,7 +46,7 @@ The project includes a simple **Flask-based web UI**:
 Users can input relevant features and get a **predicted grade**.
 
 
-## 📈 Results & Insights
+## Results & Insights
 
 * Random Forest and Neural Networks provided the most accurate results.
 * Socio-economic and psychological factors (like **Parental Education, Motivation, Stress Levels**) had a strong correlation with student performance.
